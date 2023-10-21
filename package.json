@@ -1,0 +1,24 @@
+{
+  "name": "fastify",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node index.js",
+    "generate:prisma": "prisma generate",
+    "migrate:up": "npx prisma migrate deploy",
+    "migrate:dev": "npx prisma migrate dev"
+  },
+  "dependencies": {
+    "@fastify/multipart": "^8.0.0",
+    "@prisma/client": "^5.4.2",
+    "@prisma/studio": "^0.494.0",
+    "fastify": "^4.24.1",
+    "prisma": "^5.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.7",
+    "typescript": "^5.2.2"
+  }
+}

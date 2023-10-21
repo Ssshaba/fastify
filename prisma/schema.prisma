@@ -1,0 +1,59 @@
+// schema.prisma
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        Int         @id @default(autoincrement())
+  email     String?     @unique
+  name      String?
+  faculty   String?
+  group     String? // Группа (опциональное поле)
+  phone     String? // Телефон (опциональное поле)
+  points    Int? // Количество баллов пользователя (опциональное поле)
+  photo100  String? // Добавьте поле для хранения URL фотографии
+  vkId      String? // Добавьте поле для хранения vkId
+  UserEvent UserEvent[]
+}
+
+model Place {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String
+  // Другие поля о месте
+  Photo       Photo[]
+}
+
+model Photo {
+  id      Int    @id @default(autoincrement())
+  url     String
+  place   Place  @relation(fields: [placeId], references: [id])
+  placeId Int
+}
+
+model Event {
+  id          Int         @id @default(autoincrement())
+  name        String
+  date        String
+  startTime   String
+  description String
+  pointValue  Int?
+  location    String
+  image       String
+  UserEvent   UserEvent[]
+}
+
+model UserEvent {
+  id           Int   @id @default(autoincrement())
+  userId       Int
+  eventId      Int
+  pointsEarned Int?
+  User         User  @relation(fields: [userId], references: [id])
+  Event        Event @relation(fields: [eventId], references: [id])
+}
