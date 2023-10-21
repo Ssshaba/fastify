@@ -3,6 +3,7 @@ import {GetEvents, CreateEvent, GetEventById } from "../controllers/event/event.
 
 
 const eventRouter = (fastify: FastifyInstance, opts: any, next: (err?: Error) => void) => {
+
     fastify.get('/',  GetEvents);
 
     fastify.get('/get/:eventId',  GetEventById);

@@ -1,4 +1,5 @@
 import fastify from 'fastify'
+import fastifyCors from '@fastify/cors';
 import {fastifyMultipart} from '@fastify/multipart';
 import fs from "fs";
 import placeRouter from "./src/routes/place.route";
@@ -6,10 +7,17 @@ import eventRouter from "./src/routes/event.route";
 import userRouter from "./src/routes/user.route";
 const server = fastify()
 
+
 // server.register(fastifyMultipart)
 //server.register(require('fastifyMultipart'), { attachFieldsToBody: 'keyValues'});
 
 async function start() {
+
+    // Включите плагин fastify-cors
+    await server.register(fastifyCors, {
+        origin: '*',
+    });
+
     await server.register(placeRouter, {
         prefix: '/api/place',
     });
