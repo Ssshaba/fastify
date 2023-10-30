@@ -8,6 +8,7 @@ const eventRouter = (fastify: FastifyInstance, opts: any, next: (err?: Error) =>
 
     fastify.post('/create', CreateUser );
 
+
     fastify.post('/register-for-event/:userId/:eventId', RegisterUserForEvent );
 
     next();
