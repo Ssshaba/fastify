@@ -15,6 +15,8 @@ export const GetUsers = async (req: FastifyRequest, reply: FastifyReply) => {
     }
 };
 
+
+
 interface UserData {
     email: string;
     name?: string;
@@ -23,7 +25,7 @@ interface UserData {
     points?: number;
     faculty?: string;
     photo100?: string;
-    vkId?: string;
+    vkId?: number; // Приводим к числу, чтобы соответствовать изменению в схеме
 }
 
 export const CreateUser = async (req: FastifyRequest, reply: FastifyReply) => {
@@ -38,9 +40,8 @@ export const CreateUser = async (req: FastifyRequest, reply: FastifyReply) => {
                 phone: userData.phone,
                 points: userData.points,
                 faculty: userData.faculty,
-                photo100: userData.photo100, // Добавьте поле photo100
-                vkId: userData.vkId, // Добавьте поле vkId
-
+                photo100: userData.photo100,
+                vkId: userData.vkId, // vkId теперь ожидает число
             },
         });
 
@@ -52,6 +53,7 @@ export const CreateUser = async (req: FastifyRequest, reply: FastifyReply) => {
         await prisma.$disconnect();
     }
 };
+
 
 // запись на мероприятия
 // Определите интерфейс для параметров запроса
@@ -66,7 +68,7 @@ export const RegisterUserForEvent = async (req: FastifyRequest<{ Params: Request
 
     try {
         // Проверьте, что пользователь и мероприятие существуют
-        const user = await prisma.user.findUnique({ where: { id: Number(userId) } });
+        const user = await prisma.user.findUnique({ where: { vkId: Number(userId) } });
         const event = await prisma.event.findUnique({ where: { id: Number(eventId) } });
 
         if (user && event) {
@@ -75,7 +77,7 @@ export const RegisterUserForEvent = async (req: FastifyRequest<{ Params: Request
             // Создайте запись в таблице "UserEvent" с данными пользователя, мероприятия и баллами
             await prisma.userEvent.create({
                 data: {
-                    userId: Number(userId),
+                    vkId: Number(userId),
                     eventId: Number(eventId),
                     pointsEarned: pointsEarned,
                 },
@@ -83,7 +85,7 @@ export const RegisterUserForEvent = async (req: FastifyRequest<{ Params: Request
 
             // Обновите количество баллов у пользователя
             await prisma.user.update({
-                where: { id: Number(userId) },
+                where: { vkId: Number(userId) },
                 data: {
                     points: {
                         increment: pointsEarned,

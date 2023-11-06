@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import {GetEvents, CreateEvent, GetEventById } from "../controllers/event/event.controller";
+import {GetEvents, CreateEvent, GetEventById, getUserEvents} from "../controllers/event/event.controller";
 
 
 const eventRouter = (fastify: FastifyInstance, opts: any, next: (err?: Error) => void) => {
@@ -9,6 +9,9 @@ const eventRouter = (fastify: FastifyInstance, opts: any, next: (err?: Error) =>
     fastify.get('/get/:eventId',  GetEventById);
 
     fastify.post('/create', CreateEvent );
+
+
+    fastify.get('/user-events/:userId', getUserEvents);
 
     next();
 };

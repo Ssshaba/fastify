@@ -70,3 +70,27 @@ export const GetEventById = async (req: FastifyRequest<{ Params: { eventId: numb
         await prisma.$disconnect();
     }
 };
+
+
+export const getUserEvents = async (req: FastifyRequest<{ Params: { userId: string } }>, reply: FastifyReply) => {
+    const { userId } = req.params;
+    const prisma = new PrismaClient();
+
+    try {
+        const userEvents = await prisma.userEvent.findMany({
+            where: { vkId: Number(userId) }, // Преобразование `userId` в числовой тип
+            include: {
+                Event: true
+            }
+        });
+
+        reply.code(200).send(userEvents);
+    } catch (error) {
+        console.error(error);
+        reply.status(500).send({ error: 'Произошла ошибка' });
+    } finally {
+        await prisma.$disconnect();
+    }
+};
+
+

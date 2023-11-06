@@ -18,7 +18,7 @@ model User {
   phone     String? // Телефон (опциональное поле)
   points    Int? // Количество баллов пользователя (опциональное поле)
   photo100  String? // Добавьте поле для хранения URL фотографии
-  vkId      String? // Добавьте поле для хранения vkId
+  vkId      Int?        @unique // Добавьте поле для хранения vkId
   UserEvent UserEvent[]
 }
 
@@ -51,9 +51,9 @@ model Event {
 
 model UserEvent {
   id           Int   @id @default(autoincrement())
-  userId       Int
+  vkId         Int?
   eventId      Int
   pointsEarned Int?
-  User         User  @relation(fields: [userId], references: [id])
+  User         User? @relation(fields: [vkId], references: [vkId])
   Event        Event @relation(fields: [eventId], references: [id])
 }
