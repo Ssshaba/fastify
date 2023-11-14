@@ -51,10 +51,11 @@ model Event {
 }
 
 model UserEvent {
-  id           Int   @id @default(autoincrement())
-  vkId         Int?
-  eventId      Int
-  pointsEarned Int?
-  User         User? @relation(fields: [vkId], references: [vkId])
-  Event        Event @relation(fields: [eventId], references: [id])
+  id             Int   @id @default(autoincrement())
+  vkId           Int?
+  eventId        Int
+  adminVkIdEvent Int?
+  pointsEarned   Int?
+  User           User? @relation(fields: [vkId], references: [vkId])
+  Event          Event @relation(fields: [eventId], references: [id])
 }

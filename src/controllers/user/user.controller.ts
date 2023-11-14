@@ -73,6 +73,7 @@ export const RegisterUserForEvent = async (req: FastifyRequest<{ Params: Request
 
         if (user && event) {
             const pointsEarned = event.pointValue || 0; // Получите количество баллов из мероприятия
+            //const adminVkIdEvent = event.adminVkId || 0; // Получите из мероприятия
 
             // Создайте запись в таблице "UserEvent" с данными пользователя, мероприятия и баллами
             await prisma.userEvent.create({
