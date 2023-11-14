@@ -23,6 +23,7 @@ interface EventData {
     pointValue?: number; // Поле pointValue теперь необязательное
     location: string;
     image: string;
+    adminVkId: number;
 }
 
 export const CreateEvent = async (req: FastifyRequest, reply: FastifyReply) => {
@@ -38,6 +39,7 @@ export const CreateEvent = async (req: FastifyRequest, reply: FastifyReply) => {
                 pointValue: eventData.pointValue,
                 location: eventData.location,
                 image: eventData.image, // Сохраняем URL изображения
+
             },
         });
 

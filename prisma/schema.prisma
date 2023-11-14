@@ -46,6 +46,7 @@ model Event {
   pointValue  Int?
   location    String
   image       String
+  adminVkId   Int?
   UserEvent   UserEvent[]
 }
 

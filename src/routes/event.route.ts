@@ -10,7 +10,6 @@ const eventRouter = (fastify: FastifyInstance, opts: any, next: (err?: Error) =>
 
     fastify.post('/create', CreateEvent );
 
-
     fastify.get('/user-events/:userId', getUserEvents);
 
     next();
