@@ -39,7 +39,7 @@ export const CreateEvent = async (req: FastifyRequest, reply: FastifyReply) => {
                 pointValue: eventData.pointValue,
                 location: eventData.location,
                 image: eventData.image, // Сохраняем URL изображения
-                admin: eventData.adminVkId
+                adminVkId: eventData.adminVkId
 
             },
         });
