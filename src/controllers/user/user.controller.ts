@@ -82,6 +82,40 @@ export const UpdateUser = async (req: FastifyRequest<{ Params: { userId: string 
     }
 };
 
+
+// Интерфейс для данных запроса PlusPoints
+interface PlusPointsRequestData {
+    pointsToAdd: number;
+}
+
+// Метод для увеличения количества баллов пользователя
+export const PlusPoints = async (req: FastifyRequest<{ Params: { userId: string }; Body: PlusPointsRequestData }>, reply: FastifyReply) => {
+    try {
+        const userId = parseInt(req.params.userId, 10); // Получаем vkId пользователя из параметра URL
+        const { pointsToAdd } = req.body; // Теперь TypeScript знает о свойстве pointsToAdd
+
+        // Увеличиваем количество баллов пользователя
+        const updatedUser = await prisma.user.update({
+            where: { vkId: userId },
+            data: {
+                points: {
+                    increment: pointsToAdd,
+                },
+            },
+        });
+
+        reply.send(updatedUser);
+    } catch (error) {
+        console.error(error);
+        reply.status(500).send({ error: 'An error occurred' });
+    } finally {
+        await prisma.$disconnect();
+    }
+};
+
+
+
+
 // запись на мероприятия
 // Определите интерфейс для параметров запроса
 interface RequestParams {

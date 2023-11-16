@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetEventById = exports.CreateEvent = exports.GetEvents = void 0;
+exports.getUserEvents = exports.GetEventById = exports.CreateEvent = exports.GetEvents = void 0;
 const client_1 = require("@prisma/client"); // Правильный импорт PrismaClient
 const prisma = new client_1.PrismaClient(); // Создайте экземпляр PrismaClient
 const event_repository_1 = require("../../repository/event.repository");
@@ -74,3 +74,24 @@ const GetEventById = (req, reply) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.GetEventById = GetEventById;
+const getUserEvents = (req, reply) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId } = req.params;
+    const prisma = new client_1.PrismaClient();
+    try {
+        const userEvents = yield prisma.userEvent.findMany({
+            where: { vkId: Number(userId) },
+            include: {
+                Event: true
+            }
+        });
+        reply.code(200).send(userEvents);
+    }
+    catch (error) {
+        console.error(error);
+        reply.status(500).send({ error: 'Произошла ошибка' });
+    }
+    finally {
+        yield prisma.$disconnect();
+    }
+});
+exports.getUserEvents = getUserEvents;
