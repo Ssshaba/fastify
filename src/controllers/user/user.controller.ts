@@ -54,6 +54,33 @@ export const CreateUser = async (req: FastifyRequest, reply: FastifyReply) => {
     }
 };
 
+// Метод для обновления пользователя
+export const UpdateUser = async (req: FastifyRequest<{ Params: { userId: string } }>, reply: FastifyReply) => {
+    try {
+        const userId = parseInt(req.params.userId, 10); // Получаем ID пользователя из параметра URL
+        const userData = req.body as UserData;
+
+        // Обновляем пользователя по его ID
+        const updatedUser = await prisma.user.update({
+            where: { vkId: userId },
+            data: {
+                name: userData.name,
+                group: userData.group,
+                phone: userData.phone,
+                points: userData.points,
+                faculty: userData.faculty,
+                photo100: userData.photo100,
+            },
+        });
+
+        reply.send(updatedUser);
+    } catch (error) {
+        console.error(error);
+        reply.status(500).send({ error: 'An error occurred' });
+    } finally {
+        await prisma.$disconnect();
+    }
+};
 
 // запись на мероприятия
 // Определите интерфейс для параметров запроса
