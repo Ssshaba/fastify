@@ -91,33 +91,36 @@ interface PlusPointsRequestData {
 // Метод для увеличения количества баллов пользователя
 export const PlusPoints = async (req: FastifyRequest<{ Params: { userId: string }; Body: PlusPointsRequestData }>, reply: FastifyReply) => {
     try {
-        const userId = parseInt(req.params.userId, 10);
-        const { pointsToAdd } = req.body;
+        const userId = parseInt(req.params.userId, 10); // Получаем vkId пользователя из параметра URL
+        const { pointsToAdd } = req.body; // Теперь TypeScript знает о свойстве pointsToAdd
 
-        // Получаем текущее количество баллов пользователя
-        const currentUser = await prisma.user.findUnique({
+        // Проверяем, существует ли пользователь и устанавливаем points в 0, если он равен null
+        const user = await prisma.user.findUnique({
             where: { vkId: userId },
         });
 
-        if (!currentUser) {
-            reply.status(404).send({ error: 'User not found' });
-            return;
-        }
+        if (user) {
+            if (user.points === null) {
+                await prisma.user.update({
+                    where: { vkId: userId },
+                    data: { points: 0 },
+                });
+            }
 
-        // Проверяем, не является ли points null
-        const currentPoints = currentUser.points !== null ? currentUser.points : 0;
-
-        // Увеличиваем количество баллов пользователя
-        const updatedUser = await prisma.user.update({
-            where: { vkId: userId },
-            data: {
-                points: {
-                    increment: pointsToAdd - currentPoints,
+            // Увеличиваем количество баллов пользователя
+            const updatedUser = await prisma.user.update({
+                where: { vkId: userId },
+                data: {
+                    points: {
+                        increment: pointsToAdd,
+                    },
                 },
-            },
-        });
+            });
 
-        reply.send(updatedUser);
+            reply.send(updatedUser);
+        } else {
+            reply.status(404).send({ error: 'User not found' });
+        }
     } catch (error) {
         console.error(error);
         reply.status(500).send({ error: 'An error occurred' });
@@ -125,8 +128,6 @@ export const PlusPoints = async (req: FastifyRequest<{ Params: { userId: string 
         await prisma.$disconnect();
     }
 };
-
-
 
 
 // запись на мероприятия
