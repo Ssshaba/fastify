@@ -91,15 +91,28 @@ interface PlusPointsRequestData {
 // Метод для увеличения количества баллов пользователя
 export const PlusPoints = async (req: FastifyRequest<{ Params: { userId: string }; Body: PlusPointsRequestData }>, reply: FastifyReply) => {
     try {
-        const userId = parseInt(req.params.userId, 10); // Получаем vkId пользователя из параметра URL
-        const { pointsToAdd } = req.body; // Теперь TypeScript знает о свойстве pointsToAdd
+        const userId = parseInt(req.params.userId, 10);
+        const { pointsToAdd } = req.body;
+
+        // Получаем текущее количество баллов пользователя
+        const currentUser = await prisma.user.findUnique({
+            where: { vkId: userId },
+        });
+
+        if (!currentUser) {
+            reply.status(404).send({ error: 'User not found' });
+            return;
+        }
+
+        // Проверяем, не является ли points null
+        const currentPoints = currentUser.points !== null ? currentUser.points : 0;
 
         // Увеличиваем количество баллов пользователя
         const updatedUser = await prisma.user.update({
             where: { vkId: userId },
             data: {
                 points: {
-                    increment: pointsToAdd,
+                    increment: pointsToAdd - currentPoints,
                 },
             },
         });
