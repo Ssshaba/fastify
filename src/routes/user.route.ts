@@ -1,10 +1,18 @@
 import { FastifyInstance } from 'fastify';
 import {GetPlaces} from "../controllers/place/place.controller";
 import {GetEvents, CreateEvent } from "../controllers/event/event.controller";
-import {CreateUser, GetUsers, PlusPoints, RegisterUserForEvent, UpdateUser} from "../controllers/user/user.controller";
+import {
+    CreateUser,
+    GetUserById,
+    GetUsers,
+    PlusPoints,
+    RegisterUserForEvent,
+    UpdateUser
+} from "../controllers/user/user.controller";
 
 const eventRouter = (fastify: FastifyInstance, opts: any, next: (err?: Error) => void) => {
     fastify.get('/',  GetUsers);
+    fastify.get('/:userId',  GetUserById);
 
     fastify.post('/create', CreateUser );
 

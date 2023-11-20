@@ -1,5 +1,7 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { PrismaClient } from '@prisma/client'; // Правильный импорт PrismaClient
+import { PrismaClient } from '@prisma/client';
+import {getEventById} from "../../repository/event.repository";
+import {getUserById} from "../../repository/user.repository"; // Правильный импорт PrismaClient
 const prisma = new PrismaClient(); // Создайте экземпляр PrismaClient
 
 export const GetUsers = async (req: FastifyRequest, reply: FastifyReply) => {
@@ -27,6 +29,27 @@ interface UserData {
     photo100?: string;
     vkId?: number; // Приводим к числу, чтобы соответствовать изменению в схеме
 }
+
+export const GetUserById = async (req: FastifyRequest<{ Params: { userId: number } }>, reply: FastifyReply) => {
+    try {
+    const userId = Number(req.params.userId);
+
+    const user = await getUserById(userId);
+
+    if (user) {
+        reply.send(user);
+    } else {
+        // Если мероприятие не найдено, отправьте статус 404 (Not Found)
+        reply.status(404).send({ error: 'User not found' });
+    }
+} catch (error) {
+    console.error(error);
+    // Если произошла ошибка, отправьте статус 500 (Internal Server Error)
+    reply.status(500).send({ error: 'An error occurred' });
+} finally {
+    await prisma.$disconnect();
+}
+};
 
 export const CreateUser = async (req: FastifyRequest, reply: FastifyReply) => {
     try {
