@@ -57,15 +57,13 @@ export const DeleteEvent = async (req: FastifyRequest<{ Params: { eventId: strin
     const eventId = req.params.eventId;
 
     try {
-        // Проверьте, существует ли мероприятие с указанным eventId
-        const existingEvent = await prisma.event.findUnique({ where: { id: Number(eventId) } });
+        // Находим все связанные записи в таблице UserEvent
+        const userEvents = await prisma.userEvent.findMany({ where: { eventId: Number(eventId) } });
 
-        if (!existingEvent) {
-            reply.status(404).send({ error: 'Event not found' });
-            return;
-        }
+        // Удаляем все связанные записи в таблице UserEvent
+        await prisma.userEvent.deleteMany({ where: { eventId: Number(eventId) } });
 
-        // Удалите мероприятие
+        // Удаляем мероприятие
         await prisma.event.delete({ where: { id: Number(eventId) } });
 
         reply.code(200).send({ message: 'Event deleted successfully' });
