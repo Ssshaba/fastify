@@ -161,8 +161,8 @@ interface RequestParams {
 }
 
 export const RegisterUserForEvent = async (req: FastifyRequest<{ Params: RequestParams }>, reply: FastifyReply) => {
-    const { userId, eventId } = req.params; // Получите значения параметров из запроса
-    const prisma = new PrismaClient(); // Создайте экземпляр PrismaClient
+    const { userId, eventId } = req.params;
+    const prisma = new PrismaClient();
 
     try {
         // Проверьте, что пользователь и мероприятие существуют
@@ -170,8 +170,22 @@ export const RegisterUserForEvent = async (req: FastifyRequest<{ Params: Request
         const event = await prisma.event.findUnique({ where: { id: Number(eventId) } });
 
         if (user && event) {
-            const pointsEarned = event.pointValue || 0; // Получите количество баллов из мероприятия
-            //const adminVkIdEvent = event.adminVkId || 0; // Получите из мероприятия
+            // Проверьте, не зарегистрирован ли пользователь уже на это мероприятие
+            const existingRegistration = await prisma.userEvent.findFirst({
+                where: {
+                    AND: [
+                        { vkId: Number(userId) },
+                        { eventId: Number(eventId) },
+                    ],
+                },
+            });
+
+            if (existingRegistration) {
+                reply.status(400).send({ error: 'User is already registered for the event.' });
+                return;
+            }
+
+            const pointsEarned = event.pointValue || 0;
 
             // Создайте запись в таблице "UserEvent" с данными пользователя, мероприятия и баллами
             await prisma.userEvent.create({
