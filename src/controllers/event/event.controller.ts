@@ -53,6 +53,31 @@ export const CreateEvent = async (req: FastifyRequest, reply: FastifyReply) => {
     }
 };
 
+export const DeleteEvent = async (req: FastifyRequest<{ Params: { eventId: string } }>, reply: FastifyReply) => {
+    const eventId = req.params.eventId;
+
+    try {
+        // Проверьте, существует ли мероприятие с указанным eventId
+        const existingEvent = await prisma.event.findUnique({ where: { id: Number(eventId) } });
+
+        if (!existingEvent) {
+            reply.status(404).send({ error: 'Event not found' });
+            return;
+        }
+
+        // Удалите мероприятие
+        await prisma.event.delete({ where: { id: Number(eventId) } });
+
+        reply.code(200).send({ message: 'Event deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        reply.status(500).send({ error: 'An error occurred' });
+    } finally {
+        await prisma.$disconnect();
+    }
+};
+
+
 export const GetEventById = async (req: FastifyRequest<{ Params: { eventId: number } }>, reply: FastifyReply) => {
     try {
         const eventId = Number(req.params.eventId);
