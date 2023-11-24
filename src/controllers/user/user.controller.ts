@@ -196,15 +196,15 @@ export const RegisterUserForEvent = async (req: FastifyRequest<{ Params: Request
                 },
             });
 
-            // Обновите количество баллов у пользователя
-            await prisma.user.update({
-                where: { vkId: Number(userId) },
-                data: {
-                    points: {
-                        increment: pointsEarned,
-                    },
-                },
-            });
+            // // Обновите количество баллов у пользователя
+            // await prisma.user.update({
+            //     where: { vkId: Number(userId) },
+            //     data: {
+            //         points: {
+            //             increment: pointsEarned,
+            //         },
+            //     },
+            // });
 
             reply.code(201).send({ message: 'User registered for the event and points earned.' });
         } else {
