@@ -3,11 +3,22 @@ import { PrismaClient } from '@prisma/client'; // Правильный импо�
 const prisma = new PrismaClient(); // Создайте экземпляр PrismaClient
 import { getEventById } from '../../repository/event.repository';
 
+
 export const GetEvents = async (req: FastifyRequest, reply: FastifyReply) => {
     try {
-        const events = await prisma.event.findMany(); // Используйте Prisma для получения всех мероприятий
+        const events = await prisma.event.findMany();
 
-        reply.send(events); // Отправьте данные в ответ
+        const sortedEvents = events.sort((a, b) => {
+            if (a.university === 'donstu' && b.university !== 'donstu') {
+                return -1;
+            } else if (a.university !== 'donstu' && b.university === 'donstu') {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+
+        reply.send(sortedEvents);
     } catch (error) {
         console.error(error);
         reply.status(500).send({ error: 'An error occurred' });
@@ -20,8 +31,9 @@ interface EventData {
     date: string;
     startTime: string;
     description: string;
-    pointValue?: number; // Поле pointValue теперь необязательное
+    pointValue?: number;
     location: string;
+    university?: 'general' | 'donstu';
     image: string;
     adminVkId: number;
 }
@@ -38,7 +50,8 @@ export const CreateEvent = async (req: FastifyRequest, reply: FastifyReply) => {
                 description: eventData.description,
                 pointValue: eventData.pointValue,
                 location: eventData.location,
-                image: eventData.image, // Сохраняем URL изображения
+                image: eventData.image,
+                university: eventData.university,
                 adminVkId: eventData.adminVkId
 
             },

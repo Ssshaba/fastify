@@ -46,8 +46,14 @@ model Event {
   pointValue  Int?
   location    String
   image       String
+  university  University?
   adminVkId   Int?
   UserEvent   UserEvent[]
+}
+
+enum University {
+  general
+  donstu
 }
 
 model UserEvent {
